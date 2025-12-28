@@ -10,9 +10,6 @@ This project includes a GitHub Action to automatically deploy the CloudFormation
 
 1.  **AWS Key Pair**: Ensure you have an existing EC2 Key Pair in your AWS region.
 2.  **GitHub Secrets**: Add the following secrets to your GitHub repository:
-    - `AWS_ACCESS_KEY_ID`: Your AWS access key.
-    - `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key.
-    - `AWS_REGION`: The AWS region where you want to deploy (e.g., `eu-west-2`).
     - `AWS_KEY_PAIR_NAME`: The name of your existing EC2 Key Pair.
 
 ### How it works
