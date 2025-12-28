@@ -31,7 +31,7 @@ Resources:
     Properties:
       InstanceType: t3.micro
       # This is the Ubuntu 24.04 AMI for eu-west-2 (London)
-      ImageId: ami-0e63f595a004bf5e4
+      ImageId: ami-018ff7ece22bf96db
       KeyName: !Ref KeyPairName
       SourceDestCheck: false
       SecurityGroups:
