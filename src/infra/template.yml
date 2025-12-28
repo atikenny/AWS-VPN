@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "WireGuard VPN Server using EC2"
+
+Parameters:
+  KeyPairName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access.
+    Type: "AWS::EC2::KeyPair::KeyName"
+
+Resources:
+  VPNEIP:
+    Type: "AWS::EC2::EIP"
+    Properties:
+      Domain: vpc
+
+  VPNSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Enable WireGuard and SSH access
+      SecurityGroupIngress:
+        - IpProtocol: udp
+          FromPort: 51820
+          ToPort: 51820
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  VPNInstance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: t3.micro
+      # This is the Ubuntu 24.04 AMI for eu-west-2 (London)
+      ImageId: ami-0e8d228ad90af5483
+      KeyName: !Ref KeyPairName
+      SourceDestCheck: false
+      SecurityGroups:
+        - !Ref VPNSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt-get update -y
+          apt-get install -y wireguard
+          # Automatic setup script
+          wget https://git.io/wireguard -O /home/ubuntu/wireguard-install.sh
+          chmod +x /home/ubuntu/wireguard-install.sh
+          # Note: You will still need to run this script once via SSH to generate your first user
+      Tags:
+        - Key: Name
+          Value: UK-VPN-Server
+
+  EIPAssociation:
+    Type: "AWS::EC2::EIPAssociation"
+    Properties:
+      InstanceId: !Ref VPNInstance
+      EIP: !Ref VPNEIP
+
+Outputs:
+  VPNPublicIP:
+    Description: Your new UK VPN IP Address
+    Value: !Ref VPNEIP
